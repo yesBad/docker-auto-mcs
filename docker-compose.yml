@@ -1,0 +1,10 @@
+version: "3.4"
+services:
+  auto-mcs:
+    image: "ghcr.io/yesbad/auto-mcs:novnc"
+    restart: "unless-stopped"
+    ports:
+      - "1111:80" # 1111 = the port webui is available on
+      - "25565:25565/tcp" # the port for minecraft server (need to add more if you have more yk the deal)
+    volumes:
+      - ./data:/home/bad/.auto-mcs/ # ./data is folder where your servers will be made
