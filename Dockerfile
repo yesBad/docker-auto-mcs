@@ -59,6 +59,8 @@ RUN mkdir -p ~/.fluxbox \
     && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
     && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
     && echo 'session.styleFile: /usr/share/fluxbox/styles/BlueFlux' >> ~/.fluxbox/init \
+    && echo 'session.screen0.allowRemoteActions: true' >> ~/.fluxbox/init \
+    && echo 'session.screen0.defaultDeco: NONE' >> ~/.fluxbox/init \
     && echo '[begin]\n  [maximize]\n[end]' >> ~/.fluxbox/windowmenu \
     && echo '[begin] (Fluxbox)\n[nop] (a yesBad time-waster)\n[end]' >> ~/.fluxbox/menu
 
@@ -67,7 +69,8 @@ COPY . .
 
 # make home accessable for user :)
 RUN sudo chown -R bad:bad /bad
-RUN chmod +x /bad/auto-mcs
+RUN chmod +x /bad/auto-mcs \
+    && chmod +x starter.sh
 
 USER root
 # remove from sudo
