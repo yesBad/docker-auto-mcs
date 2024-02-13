@@ -1,0 +1,5 @@
+docker compose -f dev.yml down
+docker system prune -af
+docker compose -f dev.yml build --no-cache
+screen -S run -dm docker compose -f dev.yml up 
+screen -r run
