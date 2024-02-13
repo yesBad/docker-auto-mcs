@@ -23,12 +23,12 @@ RUN apt install -y \
     x11-xkb-utils \
     xkb-data \
     libgl1-mesa-glx \
+    x11-utils \
+    wmctrl \
     libasound2
 
 # noVNC
-RUN git clone https://github.com/yesBad/noVNC -b master /bad/novnc
-RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote');/g" /bad/novnc/app/ui.js
-RUN mv /bad/novnc/vnc.html /bad/novnc/index.html
+RUN git clone https://github.com/yesBad/yesVNC -b master /bad/novnc
 
 # TurboVNC
 RUN wget https://github.com/TurboVNC/turbovnc/releases/latest/download/turbovnc_${TURBO}_amd64.deb \
@@ -52,17 +52,17 @@ WORKDIR /bad
 
 # fluxbox'd, a wonderful product
 RUN mkdir -p ~/.fluxbox \
+    && echo '[begin] (Fluxbox)\n[nop] (a yesBad time-waster)\n[exec] (Restart auto-mcs) {pkill auto-mcs}\n[end]' >> ~/.fluxbox/menu \
+    && echo 'session.styleFile: /usr/share/fluxbox/styles/debian-dark' >> ~/.fluxbox/init \
+    && echo 'session.screen0.window.unfocus.alpha: 255' >> ~/.fluxbox/init \
+    && echo 'session.screen0.allowRemoteActions: true' >> ~/.fluxbox/init \
+    && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
+    && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
+    && echo 'session.screen0.window.focus.alpha: 255' >> ~/.fluxbox/init \
     && echo 'session.screen0.toolbar.visible: false' >> ~/.fluxbox/init \
     && echo 'session.screen0.tabs.usePixmap: false' >> ~/.fluxbox/init \
-    && echo 'session.screen0.window.focus.alpha: 255' >> ~/.fluxbox/init \
-    && echo 'session.screen0.window.unfocus.alpha: 255' >> ~/.fluxbox/init \
-    && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
-    && echo 'session.screen0.window.active.alpha: 255' >> ~/.fluxbox/init \
-    && echo 'session.styleFile: /usr/share/fluxbox/styles/BlueFlux' >> ~/.fluxbox/init \
-    && echo 'session.screen0.allowRemoteActions: true' >> ~/.fluxbox/init \
-    && echo 'session.screen0.defaultDeco: NONE' >> ~/.fluxbox/init \
     && echo '[begin]\n  [maximize]\n[end]' >> ~/.fluxbox/windowmenu \
-    && echo '[begin] (Fluxbox)\n[nop] (a yesBad time-waster)\n[end]' >> ~/.fluxbox/menu
+    && echo 'session.screen0.defaultDeco: NONE' >> ~/.fluxbox/init
 
 # copy configs & auto-mcs
 COPY . .
