@@ -27,8 +27,6 @@ RUN apt install -y \
 
 # noVNC
 RUN git clone https://github.com/yesBad/noVNC -b master /bad/novnc
-RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote');/g" /bad/novnc/app/ui.js
-RUN mv /bad/novnc/vnc.html /bad/novnc/index.html
 
 # TurboVNC
 RUN wget https://github.com/TurboVNC/turbovnc/releases/latest/download/turbovnc_${TURBO}_amd64.deb \
