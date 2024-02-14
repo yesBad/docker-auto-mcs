@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set TurboVNC version
 ENV TURBO 3.1.1
 
-# Get needed packages
+# Get needed packages (+ probably useless ones)
 RUN apt update -y
 RUN apt install -y \
     wget \
@@ -30,27 +30,32 @@ RUN apt install -y \
 # noVNC
 RUN git clone https://github.com/yesBad/yesVNC -b master /bad/novnc
 
+# SSL for self-signed HTTPS
+RUN openssl genpkey -algorithm RSA -out /bad/p.key \
+    && openssl req -new -key /bad/p.key -out /bad/csr.pem -subj "/C=US/ST=New York/L=New York/O=auto-mcs/CN=https:\/\/auto-mcs.com/OU=yesBad's Docker" \
+    && openssl x509 -req -days 365 -in /bad/csr.pem -signkey /bad/p.key -out /bad/c.crt
+
 # TurboVNC
 RUN wget https://github.com/TurboVNC/turbovnc/releases/latest/download/turbovnc_${TURBO}_amd64.deb \
     && dpkg -i turbovnc*.deb \
     && apt install -f
 
-# add non root user
+# Add a non-root user for auto-mcs
 RUN adduser --disabled-password --gecos "" bad
 
-# add to sudo
+# Add it to sudo (temporarily)
 RUN echo 'bad ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-# remove tmp & cache
+# Remove cache, tmp etc :)
 RUN rm -rf /tmp/* /var/cache/apt/ /var/lib/apt/lists/* \
     && apt autoclean -y \
     && apt autoremove -y
 
-# set user & workdir
+# Set the user and workdir
 USER bad
 WORKDIR /bad
 
-# fluxbox'd, a wonderful product
+# Modify Fluxbox to our liking (or well mine :])
 RUN mkdir -p ~/.fluxbox \
     && echo '[begin] (Fluxbox)\n[nop] (a yesBad time-waster)\n[exec] (Restart auto-mcs) {pkill auto-mcs}\n[end]' >> ~/.fluxbox/menu \
     && echo 'session.styleFile: /usr/share/fluxbox/styles/debian-dark' >> ~/.fluxbox/init \
@@ -62,21 +67,23 @@ RUN mkdir -p ~/.fluxbox \
     && echo 'session.screen0.toolbar.visible: false' >> ~/.fluxbox/init \
     && echo 'session.screen0.tabs.usePixmap: false' >> ~/.fluxbox/init \
     && echo '[begin]\n  [maximize]\n[end]' >> ~/.fluxbox/windowmenu \
-    && echo 'session.screen0.defaultDeco: NONE' >> ~/.fluxbox/init
+    && echo 'session.screen0.defaultDeco: NONE' >> ~/.fluxbox/init \
+    && echo 'session.screen0.workspaces: 1' >> ~/.fluxbox/init 
 
-# copy configs & auto-mcs
+# Copy all the fancy stuff we need
 COPY . .
 
-# make home accessable for user :)
+# Make workdir accessable for user 'bad' and make starter & auto-mcs executable
 RUN sudo chown -R bad:bad /bad
 RUN chmod +x /bad/auto-mcs \
     && chmod +x starter.sh
 
 USER root
-# remove from sudo
+
+# Remove 'bad' from sudo
 RUN echo '' > /etc/sudoers
 
 USER bad
 
-# run supervisord with our configs
+# Run TurboVNC and Supervisord with 'apps' folder confs.
 ENTRYPOINT [ "bash", "-c", "/opt/TurboVNC/bin/vncserver :0 -fg -noxstartup -securitytypes None -geometry 1280x720 -depth 24 & supervisord -c /bad/supervisord.conf" ]
