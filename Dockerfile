@@ -2,13 +2,16 @@
 FROM debian:bookworm
 ENV DEBIAN_FRONTEND noninteractive
 
-# Set TurboVNC version
+# Set TurboVNC version & auto-mcs
 ENV TURBO 3.1.1
+ENV AUTOMCS auto-mcs-linux-2.0.7.zip
 
 # Get needed packages (+ probably useless ones)
 RUN apt update -y
 RUN apt install -y \
+    gosu \
     wget \
+    unzip \
     git \
     fluxbox \
     websockify \
@@ -26,6 +29,9 @@ RUN apt install -y \
     x11-utils \
     wmctrl \
     libasound2
+
+RUN wget -O /tmp/temporary.zip https://github.com/macarooni-man/auto-mcs/releases/latest/download/${AUTOMCS} \
+    && unzip /tmp/temporary.zip -d /bad/
 
 # noVNC
 RUN git clone https://github.com/yesBad/yesVNC -b master /bad/novnc
@@ -74,16 +80,13 @@ RUN mkdir -p ~/.fluxbox \
 COPY . .
 
 # Make workdir accessable for user 'bad' and make starter & auto-mcs executable
-RUN sudo chown -R bad:bad /bad
-RUN chmod +x /bad/auto-mcs \
-    && chmod +x starter.sh
+RUN sudo chown -R bad:bad /bad \
+    && chmod +x /bad/auto-mcs /bad/start
 
 USER root
 
 # Remove 'bad' from sudo
 RUN echo '' > /etc/sudoers
 
-USER bad
-
 # Run TurboVNC and Supervisord with 'apps' folder confs.
-ENTRYPOINT [ "bash", "-c", "/opt/TurboVNC/bin/vncserver :0 -fg -noxstartup -securitytypes None -geometry 1280x720 -depth 24 & supervisord -c /bad/supervisord.conf" ]
+ENTRYPOINT [ "/bad/start" ]

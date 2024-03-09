@@ -1,3 +1,4 @@
+export BUILDKIT_PROGRESS=plain
 docker compose -f dev.yml down
 docker system prune -af
 docker compose -f dev.yml build --no-cache
