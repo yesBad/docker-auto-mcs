@@ -1,4 +1,6 @@
 #!/bin/bash
-chown -R bad:bad /home/bad/.auto-mcs/
-gosu bad bash -c "/opt/TurboVNC/bin/vncserver :0 -fg -noxstartup -securitytypes None -geometry 1280x720 -depth 24"
-gosu bad supervisord -c /bad/supervisord.conf
+ls -la
+sudo chown -R bad:bad /home/bad/.auto-mcs/
+sudo echo '' > /etc/sudoers
+bash -c "/opt/TurboVNC/bin/vncserver :0 -fg -noxstartup -securitytypes None -geometry 1280x720 -depth 24"
+supervisord -c /bad/supervisord.conf

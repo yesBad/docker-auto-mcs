@@ -9,7 +9,6 @@ ENV AUTOMCS auto-mcs-linux-2.0.7.zip
 # Get needed packages (+ probably useless ones)
 RUN apt update -y
 RUN apt install -y \
-    gosu \
     wget \
     unzip \
     git \
@@ -81,12 +80,9 @@ COPY . .
 
 # Make workdir accessable for user 'bad' and make starter & auto-mcs executable
 RUN sudo chown -R bad:bad /bad \
-    && chmod +x /bad/auto-mcs /bad/start
+    && chmod +x /bad/auto-mcs /bad/start /bad/script
 
-USER root
-
-# Remove 'bad' from sudo
-RUN echo '' > /etc/sudoers
+USER bad
 
 # Run TurboVNC and Supervisord with 'apps' folder confs.
 ENTRYPOINT [ "/bad/start" ]
