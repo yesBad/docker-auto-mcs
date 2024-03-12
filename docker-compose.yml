@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   auto-mcs:
-    image: "ghcr.io/yesbad/docker-auto-mcs:latest"
+    image: "ghcr.io/yesbad/docker-auto-mcs:v2.0.7"
     restart: "unless-stopped"
     ports:
       - "1111:80" # 1111 = the port webui is available on
