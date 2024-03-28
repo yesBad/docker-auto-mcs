@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Set TurboVNC version & auto-mcs
 ENV TURBO 3.1.1
-ENV AUTOMCS auto-mcs-linux-2.0.7.zip
+ENV AUTOMCS auto-mcs-linux-2.1.zip
 
 # Get needed packages (+ probably useless ones)
 RUN apt update -y
